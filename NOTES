@@ -1,0 +1,145 @@
+Notes on CupL
+=============
+
+All data is stored and passed around in a struct called analysis with the
+following fields:
+
+Preprocessing fields
+--------------------
+
+.stages: cell array of strings, completed analysis stages
+
+.nSisters: scalar, total # of sisters
+
+.nTracks: scalar, total # of tracks
+
+.nCells: scalar, total # of cells
+
+.sisterCount: Nsx1, # of sisters per cell
+
+.trackCount: Ntx1, # of tracks per cell
+
+.sisterCellIdx: 1xNs, cell index of sisters
+
+.sisterCoords1/2: Tx3Ns, coordinates of each sister in concatenated columns
+                  of x,y,z
+
+.trackCellIdx: 1xNt, cell index of tracks
+
+.trackCoords: Tx3Nt, coordinates of each track in concatenated columns
+              of x,y,z
+
+.trackInt: Cx1 struct, track intensity structure with subfields:
+           .mean: 
+           .max
+           .min
+           .median
+
+.maxTrackLength: scalar, # timepoints in longest track 
+                 (== size(.sisterCoords1,1))
+
+.time: 1xT, timepoints
+
+.sisterNanCount: 1xNs, # of NaNs in each sister track
+
+.trackNanCount: 1xNt, # of NaNs in each track
+
+.nAcceptedSistersPerCell: Ncx1, # of accepted sisters in each cell
+
+.nAcceptedTracksPerCell: Ncx1, # of accepted tracks in each cell
+
+.nAcceptedSisters: scalar, total # of accepted sisters
+
+.nAcceptedTracks: scalar, total # of accepted tracks
+
+.nAcceptedCells: scalar, total # of accepted cells
+
+.acceptedCells: logical 1xNc, indicating which cells are accepted
+
+.inspectionAcceptedCells: logical 1xNc, indicating which cells were
+                          explicitly accepted by the user
+
+.acceptedSisters: logical 1xNs, indicating which sisters are accepted
+
+.acceptedTracks: logical 1xNs, indicating which tracks are accepted
+
+.acceptedSisterCellIdx: 1xMs, indicating cell index of accepted sisters
+                        (== .sisterCellIdx(.acceptedSisters))
+
+.acceptedTrackCellIdx: 1xMt, indicating cell index of accepted tracks
+                        (== .trackCellIdx(.acceptedTracks))
+
+.sisterCentreCoords: Tx3Ns, coordinates of sister pair centres in
+                     concatenated columns of x,y,z
+
+.sisterCentrePos: Nsx3, coordinates of mean sister pair centre position
+
+.trackPos: Ntx3, coordinates of mean track position
+
+.cellCentres: Ncx3, coordinates of cell centres
+
+.sisterRadii: Nsx1, distance of sister pair mean position from cell centre
+
+.trackRadii: Ntx1, distance of track mean position from cell centre
+
+.pairIdx: struct, indexes for various sister/track pairings, see Analysis section for details
+   .sisters
+       .ind: Px4, where P = 4*sum(nchoosek(Q_i,2)), Q_i = # of accepted sister pairs in cell i,
+                  and columns are [sister, paired sister, coords1/2 1st track,
+                                   coords1/2 2nd track, combined coords1/2 index 1 and 2]
+       .pair: Px2, where P = sum(nchoosek(Q_i,2))
+   .tracks
+       .ind: Px2, where P = sum(nchoosek(Q_i,2)), Q_i = # of accepted tracks in cell i
+
+
+NB: Be careful to use the right indexing. If indexing into e.g. .sisterCoords1,
+use e.g. find(.acceptedSisters & .sistersCellIdx == cellIdx). If indexing into
+data which is already filtered for accepted sisters, use something like
+find(.acceptedSistersCellIdx == cellIdx).
+
+Analysis fields
+---------------
+
+Each field resulting from analysis has, where appropriate, additional subfields:
+     with prefixes m_, s_ and e_ indicating overall mean, standard deviation, and
+          standard error.
+     with prefixes cm_, cs_ and ce_ indicating mean, stddev, stderr per cell.
+
+Where analysis is done pairwise the following groups of pairings are distinguished
+   (nb, these are always within the same cell):
+   under .sisters:-
+      .ind: individual track to any other non-sister individual track pairings
+      .pair: sister pair centre to any other sister pair centre pairings
+      .sister: sister to its own sister pairings
+   under .tracks:-
+      .ind: individual track to any other individual track pairings
+For numbers of possible pairings see the 
+
+
+.autocorrs: struct, autocorrelation analysis
+     .dx: LxMs normal displacement of sister centres
+     .dd: LxMs displacement of sister separation
+
+.distances: struct, pairwise distance analysis
+     .d:  Px1 Euclidean distance
+
+.crosscorrs: struct, pairwise crosscorrelation analysis
+     .dx: LxP crosscorrelation of normal displacement
+
+
+where Nc, Nt, Ns refers to # of cells, tracks or sisters
+      Mc, Mt, Ms refers to # of accepted cells, tracks or sisters
+      T is the # of timepoints
+      C is # of channels
+      L is the # of lags (== T-1)
+      P refers to the number of pairings as described under .pairIdx
+        
+
+
+
+Analysis is controlled by the options struct which is another subfield of
+the analysis struct, with the following fields:
+
+.percentNan: scalar, (misnamed) maximum fraction of tracks that can be NaN
+             to be accepted
+

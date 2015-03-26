@@ -1,0 +1,85 @@
+CupL software
+=============
+
+CupL is a MATLAB program for assisting with the analysis of kinetochore pair
+dynamics. It calculates various statistics on kinetochore tracks, including
+autocorrelations, crosscorrelations, separation distances and speeds, as well as
+collating tracking data into a unified data file. Input tracking data can be
+from the KiT program or the Maki program (see Jaqaman, et al., JCB 188:665-679 2010).
+
+This software is licensed for use under the GNU GPL v3 license. See LICENSE file
+for details.
+
+Installation
+------------
+
+No installation is necessary, simply copy the source code to the directory of
+your choice. Enter that directory within MATLAB (use directory toolbar at top,
+or 'cd' command) and then enter commands.
+
+Usage
+-----
+
+Analysis of tracking data begins with the following command:
+
+    analysis = cuplAnalyseFiles;
+
+A dialog appears to allow selection of the directory to recursively search for
+tracking data. Choose a directory.
+
+Files beginning 'kittracking' or 'sisterList' will be displayed in the file
+chooser dialog. Highlight data files to analyse on the left and press the arrow
+button to move them to the right. Press 'Done'
+
+A file dialog will appear asking for an output mat-file filename. Plots will
+also be generated at the same location, so it is recommended to create a
+sub-directory for this file.
+
+A dialog will now appear to allow editing of various analysis parameters. The
+defaults will usually be sufficient. Press 'Ok' to begin analysis.
+
+When analysis has finished, you will be presented with a list of possible
+plots. Highlight desired plots or press 'Select all'. Press 'Plot' and the plot
+options dialog will appear. This allows customization of various plot
+parameters. The defaults will usually be sufficient. Press 'Ok' to begin drawing
+plots.
+
+Plots will be saved as PDF files with reasonably self-explanatory names
+(containing the name of the analysis mat-file). The data plotted is also
+exported as CSV files.
+
+Advanced usage
+--------------
+
+Analysis may be limited to reduce size or increase speed by specifying the
+analysis jobs to perform as the first parameter to 'cuplAnalyseFiles'. The data
+files to load and the output filename can also be set here. See 'help
+cuplAnalyseFiles' for details.
+
+The results of all analyses are stored in the analysis struct returned by
+'cuplAnalyseFiles'. For a guide to the fields, see the NOTES file.
+
+
+Bugs
+----
+
+Send bug or crash reports and feature requests to jonathan.armond@warwick.ac.uk.
+
+Include:
+  - Brief description of steps to reproduce error.
+  - Copy of the error text.
+  - Tracking data mat-file(s).
+  - Analysis mat-file (if available).
+
+
+Credits
+-------
+
+- E. Vladimirou wrote the original version of CupL in 2010 for the analysis
+  of coupling between kinetochore trajectories.
+
+- J. W. Armond organised the code into its current form as CupL. He added
+  support for analysing individual tracks as opposed to sister pairs. He also
+  made a number of improvements toward code cleanliness and efficiency.
+
+
