@@ -15,7 +15,8 @@ end
 an = analysis;
 
 % Compute change in sister centre position.
-delX = diff(an.sisterCentreCoords(:,1:3:end)); % FIXME divide by time.
+dt = mode(an.time);
+delX = diff(an.sisterCentreCoords(:,1:3:end)) / dt;
         
 % Mean normal speed.
 speeds.dx = nanmean(abs(delX))';
